@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice de Maths</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercice de Maths</h1>
+        <div id="exercice-container" class="border p-3 bg-white rounded shadow">
+            <!-- Le contenu de l'exercice sera inséré ici -->
+        </div>
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-primary">Retour à la liste des exercices</a>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function waitForMathJax(callback) {
+            if (window.MathJax) {
+                callback();
+            } else {
+                setTimeout(() => waitForMathJax(callback), 100);
+            }
+        }
+
+        const exerciceId = getQueryParam('id');
+
+        fetch('exercices_generes.json')
+            .then(response => response.json())
+            .then(data => {
+                const exercice = data.exercices.find(ex => ex.id == exerciceId);
+                if (exercice) {
+                    document.getElementById('exercice-container').innerHTML = exercice.contenu;
+
+                    // Appeler la fonction waitForMathJax
+                    waitForMathJax(() => {
+                        MathJax.typesetPromise().then(() => {
+                            console.log("MathJax rendu avec succès.");
+                        }).catch((err) => {
+                            console.error("Erreur lors du rendu de MathJax :", err);
+                        });
+                    });
+                } else {
+                    document.getElementById('exercice-container').innerHTML = '<p>Exercice non trouvé.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des données :', error);
+                document.getElementById('exercice-container').innerHTML = '<p>Erreur lors du chargement de l\'exercice.</p>';
+            });
+    </script>
+</body>
+</html>

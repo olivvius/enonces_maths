@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Exercices de Maths</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-top: 20px;
+        }
+        table {
+            margin-top: 20px;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des Exercices de Maths</h1>
+        <div class="filter-container">
+            <label for="selectClasse">Filtrer par Classe:</label>
+            <select id="selectClasse" class="custom-select w-50 d-inline-block mx-2">
+                <option value="">Toutes les classes</option>
+                <option value="6e">6e</option>
+                <option value="5e">5e</option>
+                <option value="4e">4e</option>
+                <option value="3e">3e</option>
+            </select>
+            <br></br>
+            <label for="selectChapitre">Filtrer par Chapitre:</label>
+            <select id="selectChapitre" class="custom-select w-50 d-inline-block mx-2">
+                <option value="">Tous les chapitres</option>
+                <option value="Nombres entiers et décimaux">Nombres entiers et décimaux</option>
+                <option value="Fractions simples">Fractions simples</option>
+                <option value="Calcul mental">Calcul mental</option>
+                <option value="Opérations : addition, soustraction, multiplication, division">Opérations : addition, soustraction, multiplication, division</option>
+                <option value="Proportionnalité">Proportionnalité</option>
+                <option value="Les pourcentages">Les pourcentages</option>
+                <option value="Organisation et gestion de données">Organisation et gestion de données</option>
+                <option value="Introduction à l'algèbre : expressions et égalités">Introduction à l'algèbre : expressions et égalités</option>
+                <option value="Initiation aux équations">Initiation aux équations</option>
+                <option value="Fractions et décimaux">Fractions et décimaux</option>
+                <option value="Proportionnalité : grandeurs, échelles">Proportionnalité : grandeurs, échelles</option>
+                <option value="Les puissances">Les puissances</option>
+                <option value="Statistiques : représentations graphiques">Statistiques : représentations graphiques</option>
+                <option value="Équations du premier degré">Équations du premier degré</option>
+                <option value="Nombres relatifs">Nombres relatifs</option>
+                <option value="Probabilités : événements, calculs">Probabilités : événements, calculs</option>
+            </select>
+        </div>
+
+        <table class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Id</th>
+                    <th>Classe</th>
+                    <th>Chapitre</th>
+                    <th>Titre</th>
+                    <th>Lien vers l'énoncé</th>
+                </tr>
+            </thead>
+            <tbody id="exercices-table">
+                <!-- Les exercices seront injectés ici par JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        fetch('exercices_generes.json')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('exercices-table');
+                const selectClasse = document.getElementById('selectClasse');
+                const selectChapitre = document.getElementById('selectChapitre');
+
+                const updateTable = () => {
+                    tableBody.innerHTML = '';
+                    data.exercices.forEach(exercice => {
+                        if ((selectClasse.value === '' || exercice.classe === selectClasse.value) &&
+                            (selectChapitre.value === '' || exercice.chapitre === selectChapitre.value)) {
+                            const row = document.createElement('tr');
+                            const cellId = document.createElement('td');
+                            cellId.textContent = exercice.id;
+                            row.appendChild(cellId);
+
+                            const cellClasse = document.createElement('td');
+                            cellClasse.textContent = exercice.classe;
+                            row.appendChild(cellClasse);
+
+                            const cellChapitre = document.createElement('td');
+                            cellChapitre.textContent = exercice.chapitre;
+                            row.appendChild(cellChapitre);
+
+                            const cellTitle = document.createElement('td');
+                            cellTitle.textContent = exercice.titre;
+                            row.appendChild(cellTitle);
+
+                            const cellLink = document.createElement('td');
+                            const link = document.createElement('a');
+                            link.href = `exercice.html?id=${exercice.id}`;
+                            link.textContent = "Voir l'énoncé";
+                            cellLink.appendChild(link);
+                            row.appendChild(cellLink);
+
+                            tableBody.appendChild(row);
+                        }
+                    });
+                    MathJax.typeset();
+                };
+
+                selectClasse.addEventListener('change', updateTable);
+                selectChapitre.addEventListener('change', updateTable);
+
+                updateTable(); // Pour afficher les exercices au chargement de la page
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des données :', error);
+            });
+    </script>
+
+</body>
+</html>
